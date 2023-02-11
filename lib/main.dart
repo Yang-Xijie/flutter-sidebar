@@ -50,14 +50,7 @@ class _SidebarViewState extends State<SidebarView> {
             child: SizedBox(
               height: constraints.maxHeight,
               width: constraints.maxWidth * widget.sideWidthFactor,
-              child: Stack(children: [
-                widget.sideView,
-                Positioned(
-                  child: widget.iconView,
-                  right: 8.0,
-                  top: 8.0,
-                )
-              ]),
+              child: widget.sideView,
             ),
           ),
           Positioned(child: LayoutBuilder(builder: (context, constraints) {
@@ -68,6 +61,25 @@ class _SidebarViewState extends State<SidebarView> {
               child: widget.mainView,
             );
           })),
+          Positioned(
+            right: 8.0,
+            top: 8.0,
+            child: GestureDetector(
+                onTap: () {
+                  if (sideOpenFactor == 0.0) {
+                    setState(() {
+                      sideOpenFactor = 1.0;
+                    });
+                  } else if (sideOpenFactor == 1.0) {
+                    setState(() {
+                      sideOpenFactor = 0.0;
+                    });
+                  } else {
+                    debugPrint("do nothing");
+                  }
+                },
+                child: widget.iconView),
+          )
         ],
       );
     });
