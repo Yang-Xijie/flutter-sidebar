@@ -20,7 +20,7 @@ void main() {
   );
 }
 
-class SidebarView extends StatelessWidget {
+class SidebarView extends StatefulWidget {
   final Widget iconView;
   final Widget mainView;
   final Widget sideView;
@@ -34,29 +34,40 @@ class SidebarView extends StatelessWidget {
   });
 
   @override
+  State<SidebarView> createState() => _SidebarViewState();
+}
+
+class _SidebarViewState extends State<SidebarView> {
+  double sideOpenFactor = 1.0;
+
+  @override
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraints) {
-      return Row(
+      return Stack(
         children: [
-          Expanded(child: LayoutBuilder(builder: (context, constraints) {
+          Positioned(
+            right: 0.0,
+            child: SizedBox(
+              height: constraints.maxHeight,
+              width: constraints.maxWidth * widget.sideWidthFactor,
+              child: Stack(children: [
+                widget.sideView,
+                Positioned(
+                  child: widget.iconView,
+                  right: 8.0,
+                  top: 8.0,
+                )
+              ]),
+            ),
+          ),
+          Positioned(child: LayoutBuilder(builder: (context, constraints) {
             return SizedBox(
               height: constraints.maxHeight,
-              width: constraints.maxWidth,
-              child: mainView,
+              width: constraints.maxWidth *
+                  (1 - widget.sideWidthFactor * sideOpenFactor),
+              child: widget.mainView,
             );
           })),
-          SizedBox(
-            height: constraints.maxHeight,
-            width: constraints.maxWidth * sideWidthFactor,
-            child: Stack(children: [
-              sideView,
-              Positioned(
-                child: iconView,
-                right: 8.0,
-                top: 8.0,
-              )
-            ]),
-          )
         ],
       );
     });
