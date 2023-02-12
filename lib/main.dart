@@ -5,7 +5,7 @@ void main() {
   const double fontSize = 64;
 
   runApp(
-    MaterialApp(
+    const MaterialApp(
       home: DefaultTextStyle(
         style: TextStyle(fontSize: fontSize, color: Colors.white),
         child: SidebarWidget(
@@ -23,22 +23,22 @@ void main() {
 }
 
 class MainView extends StatelessWidget {
-  MainView({super.key});
+  const MainView({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-        color: Colors.orange, child: Center(child: Text("MainView")));
+        color: Colors.orange, child: const Center(child: Text("MainView")));
   }
 }
 
 class SettingsView extends StatelessWidget {
-  SettingsView({super.key});
+  const SettingsView({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-        color: Colors.green, child: Center(child: Text("SettingsView")));
+        color: Colors.green, child: const Center(child: Text("SettingsView")));
   }
 }
 
@@ -51,7 +51,7 @@ class SidebarWidget extends StatefulWidget {
   final double defaultPaddingSize = 8.0;
   final int sideViewOpenAnimationDuration = 500; // ms
 
-  SidebarWidget({
+  const SidebarWidget({
     super.key,
     required this.iconView,
     required this.mainView,
