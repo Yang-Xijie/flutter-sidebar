@@ -2,11 +2,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 void main() {
+  const double fontSize = 64;
+
   runApp(
     MaterialApp(
       home: DefaultTextStyle(
-        style: TextStyle(fontSize: 64, color: Colors.white),
-        child: SidebarView(
+        style: TextStyle(fontSize: fontSize, color: Colors.white),
+        child: SidebarWidget(
           iconView: Icon(
             CupertinoIcons.settings,
             color: Colors.white,
@@ -18,72 +20,6 @@ void main() {
       debugShowCheckedModeBanner: false,
     ),
   );
-}
-
-class SidebarView extends StatefulWidget {
-  final Widget iconView;
-  final Widget mainView;
-  final Widget sideView;
-  final double sideWidthFactor = 0.3;
-
-  SidebarView({
-    super.key,
-    required this.iconView,
-    required this.mainView,
-    required this.sideView,
-  });
-
-  @override
-  State<SidebarView> createState() => _SidebarViewState();
-}
-
-class _SidebarViewState extends State<SidebarView> {
-  double sideOpenFactor = 1.0;
-
-  @override
-  Widget build(BuildContext context) {
-    return LayoutBuilder(builder: (context, constraints) {
-      return Stack(
-        children: [
-          Positioned(
-            right: 0.0,
-            child: SizedBox(
-              height: constraints.maxHeight,
-              width: constraints.maxWidth * widget.sideWidthFactor,
-              child: widget.sideView,
-            ),
-          ),
-          Positioned(child: LayoutBuilder(builder: (context, constraints) {
-            return SizedBox(
-              height: constraints.maxHeight,
-              width: constraints.maxWidth *
-                  (1 - widget.sideWidthFactor * sideOpenFactor),
-              child: widget.mainView,
-            );
-          })),
-          Positioned(
-            right: 8.0,
-            top: 8.0,
-            child: GestureDetector(
-                onTap: () {
-                  if (sideOpenFactor == 0.0) {
-                    setState(() {
-                      sideOpenFactor = 1.0;
-                    });
-                  } else if (sideOpenFactor == 1.0) {
-                    setState(() {
-                      sideOpenFactor = 0.0;
-                    });
-                  } else {
-                    debugPrint("do nothing");
-                  }
-                },
-                child: widget.iconView),
-          )
-        ],
-      );
-    });
-  }
 }
 
 class MainView extends StatelessWidget {
@@ -103,5 +39,82 @@ class SettingsView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
         color: Colors.green, child: Center(child: Text("SettingsView")));
+  }
+}
+
+class SidebarWidget extends StatefulWidget {
+  final Widget iconView;
+  final Widget mainView;
+  final Widget sideView;
+
+  final double sideViewWidthRatio = 0.3;
+  final double defaultPaddingSize = 8.0;
+  final int sideViewOpenAnimationDuration = 500; // ms
+
+  SidebarWidget({
+    super.key,
+    required this.iconView,
+    required this.mainView,
+    required this.sideView,
+  });
+
+  @override
+  State<SidebarWidget> createState() => _SidebarWidgetState();
+}
+
+class _SidebarWidgetState extends State<SidebarWidget> {
+  double sideViewOpenProgress = 0.0;
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(builder: (context, constraints) {
+      return Stack(
+        children: [
+          Positioned(
+            right: 0.0,
+            child: SizedBox(
+              height: constraints.maxHeight,
+              width: constraints.maxWidth * widget.sideViewWidthRatio,
+              child: widget.sideView,
+            ),
+          ),
+          Positioned(child: LayoutBuilder(builder: (context, constraints) {
+            return TweenAnimationBuilder<double>(
+                tween: Tween<double>(begin: 0, end: sideViewOpenProgress),
+                duration: Duration(
+                    milliseconds: widget.sideViewOpenAnimationDuration),
+                curve: Curves.easeInOutSine,
+                builder: (BuildContext context, double tweenSideOpenFactor,
+                    Widget? child) {
+                  return SizedBox(
+                    height: constraints.maxHeight,
+                    width: constraints.maxWidth *
+                        (1 - widget.sideViewWidthRatio * tweenSideOpenFactor),
+                    child: widget.mainView,
+                  );
+                });
+          })),
+          Positioned(
+            right: widget.defaultPaddingSize,
+            top: widget.defaultPaddingSize,
+            child: GestureDetector(
+                onTap: () {
+                  if (sideViewOpenProgress == 0.0) {
+                    setState(() {
+                      sideViewOpenProgress = 1.0;
+                    });
+                  } else if (sideViewOpenProgress == 1.0) {
+                    setState(() {
+                      sideViewOpenProgress = 0.0;
+                    });
+                  } else {
+                    debugPrint("do nothing");
+                  }
+                },
+                child: widget.iconView),
+          )
+        ],
+      );
+    });
   }
 }
